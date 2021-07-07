@@ -1,12 +1,15 @@
 
+import sys
 import os
 import os.path
+
+import yaml
 
 import argparse
 import logging
 import string
 
-from . import embed
+from .embed import Environment, TargetBundle
 
 
 def main():
@@ -16,45 +19,44 @@ def main():
         epilog='Have loads of fun!',
     )
 
-    # parser.add_argument("file", nargs='+',
-    #                     metavar='file',
-    #                     help="Input file to parse mergers")
+    parser.add_argument("styxpress_setup_file", metavar='styxpress_setup_file',
+                        help="YaML setup file describing a merger of sty files")
 
     args = parser.parse_args()
 
-    logging.basicConfig()
+    logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger(__name__)
 
-    mergestybasename = 'merger'
+    # parse config file
+    with open(args.styxpress_setup_file, 'r') as stream:
+        try:
+            setup_config = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            logger.critical(f'Parse error in {args.styxpress_setup_file}.',
+                            exc_info=exc)
+            sys.exit(1)
 
-    with open(mergestybasename + ".sty", "w") as f:
-        f.write(r"""\NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{merger}[2021/04/22 TEST TEST TEST]
-""")
-        for styfname, styfoptions in [('testa.sty', ''),
-                                      ('xsimverb.sty', 'clear-aux,verbose,no-files'),
-                                      ('xsim.sty', 'clear-aux,verbose,no-files'),
-                                      ('testb.sty', 'providetestbac,ddd')]:
-            #f.write(r"\PassOptionsToPackage{" + styfoptions + "}{" + styfname + "}\n")
-            styfnamebase, styfnameext = os.path.splitext(styfname)
-            styfnameext = styfnameext.lstrip('.')
-            substkeys = {
-                'FILEBASENAME': styfnamebase,
-                'FILEEXTENSION': styfnameext,
-                'MERGEDPACKAGENAME': mergestybasename,
-                'PKGOPTIONS': styfoptions,
-            }
-            f.write(wrapper_sty_start.substitute(**substkeys))
-            with open(styfname, 'r') as fsty:
-                contents = fsty.read()
-                i = contents.rfind(r'\endinput')
-                if i != -1:
-                    contents = contents[:i]
-                i = contents.rfind(r'\file_input_stop:') # for packages w/ Expl3 syntax
-                if i != -1:
-                    contents = contents[:i]
-                f.write(contents)
-            f.write(wrapper_sty_end.substitute(**substkeys))
+    logger.info("Read config: %r", setup_config)
+
+    env = Environment()
+
+    bundle = TargetBundle(
+        env,
+        setup_config['bundle']['package_name']
+    )
+
+    for em_d in setup_config['embed']:
+
+        if 'styname' in em_d:
+            em_d = { 'embed_engine': 'sty',
+                     'config': dict(em_d) }
+
+        bundle.add_embed(em_d['embed_engine'], em_d['config'])
+
+
+    bundle.generate(output_dir=setup_config['bundle'].get('output_dir', '.'))
+
+    logger.info('Done.')
 
 
 if __name__ == '__main__':

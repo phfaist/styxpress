@@ -5,8 +5,13 @@ description = "Embed LaTeX packages and files into a single sty bundle"
 authors = ["Philippe Faist <philippe.faist@bluewin.ch>"]
 license = "MIT"
 
+[tool.poetry.scripts]
+poetry = 'styxpress.__main__:main'
+
 [tool.poetry.dependencies]
 python = "^3.8"
+PyYAML = "^5.4.1"
+PyPDF2 = "^1.26.0"
 
 [tool.poetry.dev-dependencies]
 

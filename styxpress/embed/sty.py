@@ -1,3 +1,4 @@
+import os.path
 import string
 
 from ._embedder_engine import EmbedderEngine
@@ -22,11 +23,11 @@ r"""%%% -- styxpress wrapper code begin --
 \@pass@ptions\@currext{$PKGOPTIONS}{$FILEBASENAME}%
 \global\expandafter\let\csname ver@\@currname.\@currext\endcsname\@empty
 %%% -- $FILEBASENAME.$FILEEXTENSION contents begin --
-\message{***STYXPRESS: USING PRE-PACKAGED VERSION OF $FILEBASENAME***}%
+\message{***STYXPRESS: USING PRE-PACKAGED VERSION OF `$FILEBASENAME'***}%
 """)
 
 _wrapper_sty_end = string.Template(
-r"""%%% -- $FILEBASENAME.$FILEEXTENSION contents end --
+r"""%%% -- `$FILEBASENAME.$FILEEXTENSION' contents end --
 \let\@unprocessedoptions\@@unprocessedoptions
 \csname\@currname.\@currext-h@@k\endcsname
 \expandafter\let\csname\@currname.\@currext-h@@k\endcsname
@@ -51,32 +52,37 @@ class StyEmbedder(EmbedderEngine):
         self.target_bundle = target_bundle
         self._initialize(**kwargs)
 
-    def _initialize(self, styname, options='', use_auto_ext=True, tex_path_search=False)
+    def _initialize(self, styname, options='', use_auto_ext=True, search_tex_path=False):
         self.styname = styname
         self.options = options
         self.use_auto_ext = use_auto_ext
-        self.tex_path_search = tex_path_search
+        self.search_tex_path = search_tex_path
         
         sty_file_name = self.styname
         if use_auto_ext:
             if not sty_file_name.endswith('.sty'):
                 sty_file_name += '.sty'
-        if tex_path_search:
-            sty_file_name = target_bundle.environment.kpsewhich(sty_file_name)
+        if search_tex_path:
+            sty_file_name = self.target_bundle.environment.kpsewhich(sty_file_name)
 
-        styfnamebase, styfnameext = os.path.splitext(self.sty_file_name)
+        self.sty_file_name = sty_file_name
+
+        stydirname, styfullbasename = os.path.split(self.sty_file_name)
+        styfnamebase, styfnameext = os.path.splitext(styfullbasename)
+        self.stydirname = stydirname
         self.styfnamebase = styfnamebase
         self.styfnameext = styfnameext.lstrip('.')
         self._tmpl_substkeys = {
+            'FILEDIR': self.stydirname,
             'FILEBASENAME': self.styfnamebase,
             'FILEEXTENSION': self.styfnameext,
-            'MERGEDPACKAGENAME': target_bundle.bundle_package_name(),
+            'MERGEDPACKAGENAME': self.target_bundle.bundle_package_name,
             'PKGOPTIONS': self.options,
         }
 
         self.latex_endinput_commands = list(_latex_endinput_commands)
 
-    def wrapper_sty_begin(self):
+    def wrapper_sty_start(self):
         return _wrapper_sty_start.substitute(**self._tmpl_substkeys)
         
     def wrapper_sty_end(self):
@@ -92,7 +98,7 @@ class StyEmbedder(EmbedderEngine):
             fout.write(contents)
 
     def embed(self, f):
-        f.write(wrapper_sty_start.substitute(**substkeys))
+        f.write( self.wrapper_sty_start() )
         self.read_and_copy_sty(f)
-        f.write(wrapper_sty_end.substitute(**substkeys))
+        f.write( self.wrapper_sty_end() )
 
