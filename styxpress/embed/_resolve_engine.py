@@ -6,6 +6,10 @@ def resolve_embed_engine(embed_engine):
         from .sty import StyEmbedder
         return StyEmbedder
 
+    if embed_engine == 'pdf':
+        from .pdf import PdfEmbedder
+        return PdfEmbedder
+
     if embed_engine == 'pdflogo':
         from .pdflogo import PdfLogoEmbedder
         return PdfLogoEmbedder

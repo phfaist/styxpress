@@ -19,42 +19,54 @@ def main():
         epilog='Have loads of fun!',
     )
 
-    parser.add_argument("styxpress_setup_file", metavar='styxpress_setup_file',
-                        help="YaML setup file describing a merger of sty files")
+    parser.add_argument("styxpress_folder", metavar='styxpress_folder',
+                        help="Folder (conventionally with suffix *.styxpress) containing "
+                        "a 'info.yml' describing a styxpress merger")
 
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger(__name__)
 
+    styxpress_folder = args.styxpress_folder.rstrip('/') # remove any trailing slashes
+    styxpress_folder_parent_dir, styxpress_folder_name = os.path.split(styxpress_folder)
+
+    info_yml = os.path.join(styxpress_folder, 'info.yml')
+
+    logger.debug("Reading styxpress merger info from ‘%s’", info_yml)
+
     # parse config file
-    with open(args.styxpress_setup_file, 'r') as stream:
+    with open(info_yml, 'r') as stream:
         try:
             setup_config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
-            logger.critical(f'Parse error in {args.styxpress_setup_file}.',
+            logger.critical(f'Parse error in ‘{info_yml}’.',
                             exc_info=exc)
             sys.exit(1)
 
-    logger.info("Read config: %r", setup_config)
+    logger.debug("Read config: %r", setup_config)
 
     env = Environment()
 
-    bundle = TargetBundle(
-        env,
-        setup_config['bundle']['package_name']
-    )
+    bundle_config = setup_config.get('bundle', {})
+    package_name = bundle_config.get('package_name', styxpress_folder_name)
+    output_dir = bundle_config.get('output_dir', styxpress_folder_parent_dir)
 
-    for em_d in setup_config['embed']:
+    bundle = TargetBundle(env, styxpress_folder, package_name)
 
-        if 'styname' in em_d:
-            em_d = { 'embed_engine': 'sty',
-                     'config': dict(em_d) }
+    if 'version' in bundle_config:
+        bundle.bundle_package_version = bundle_config['version']
 
-        bundle.add_embed(em_d['embed_engine'], em_d['config'])
+    if 'date' in bundle_config:
+        bundle.bundle_package_date = bundle_config['date']
 
+    embed_rules = setup_config['embed']
 
-    bundle.generate(output_dir=setup_config['bundle'].get('output_dir', '.'))
+    for em_d in embed_rules:
+
+        bundle.add_embed(em_d['embed_engine'], em_d.get('config', {}))
+
+    bundle.generate(output_dir=output_dir)
 
     logger.info('Done.')
 

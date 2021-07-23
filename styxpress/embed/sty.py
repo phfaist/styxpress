@@ -22,8 +22,8 @@ r"""%%% -- styxpress wrapper code begin --
 }{}%
 \@pass@ptions\@currext{$PKGOPTIONS}{$FILEBASENAME}%
 \global\expandafter\let\csname ver@\@currname.\@currext\endcsname\@empty
+%%%\message{styxpress: using pre-packaged version of `$FILEBASENAME' }%
 %%% -- $FILEBASENAME.$FILEEXTENSION contents begin --
-\message{***STYXPRESS: USING PRE-PACKAGED VERSION OF `$FILEBASENAME'***}%
 """)
 
 _wrapper_sty_end = string.Template(
@@ -48,8 +48,7 @@ _latex_endinput_commands = [
 
 class StyEmbedder(EmbedderEngine):
     def __init__(self, target_bundle, kwargs):
-        super().__init__()
-        self.target_bundle = target_bundle
+        super().__init__(target_bundle)
         self._initialize(**kwargs)
 
     def _initialize(self, styname, options='', use_auto_ext=True, search_tex_path=False):
@@ -89,7 +88,8 @@ class StyEmbedder(EmbedderEngine):
         return _wrapper_sty_end.substitute(**self._tmpl_substkeys)
 
     def read_and_copy_sty(self, fout):
-        with open(self.sty_file_name, 'r') as fsty:
+        fname = self.target_bundle.resolve_file_name(self.sty_file_name)
+        with open(fname, 'r') as fsty:
             contents = fsty.read()
             for endinputcmd in self.latex_endinput_commands:
                 i = contents.rfind(endinputcmd)
