@@ -1,0 +1,16 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{testb}[2021/04/22 test package]
+
+\newcommand{\testbaa}{BBB}
+
+\def\testbab{\@firstofone{C}\@gobble{D}}
+
+
+\DeclareOption{providetestbac}{
+  \def\testbac{CCC!}
+}
+\DeclareOption{ddd}{}
+
+\ProcessOptions\relax
+
+

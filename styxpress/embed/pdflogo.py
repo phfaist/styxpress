@@ -1,8 +1,8 @@
 import re
 import os.path
 import string
-
-import base64
+import textwrap
+#import base64
 
 import logging
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 import PyPDF2
 
 
-from ._embedder_engine import EmbedderEngine
+from .._embedder_engine import EmbedderEngine
 
 
 # want:
@@ -40,10 +40,13 @@ class PdfLogoEmbedder(EmbedderEngine):
         self.page = page
         self.cmdname = cmdname
 
-        logger.warning("The `pdflogo` embedder is a crazy hack that tries to extract "
-                       "contents from the PDF file and is likely to produce weird "
-                       "results.  It is strongly advised to use the `pdf` embedder "
-                       "instead!")
+        logger.warning(textwrap.fill(
+            "The `pdflogo` embedder is a crazy hack that tries to extract "
+            "contents from the PDF file and is likely to produce weird "
+            "results.  It is strongly advised to use the `pdf` embedder "
+            "instead!",
+            subsequent_indent = '',
+        ))
 
         
     def get_pdf_contents(self):
@@ -105,9 +108,13 @@ class PdfLogoEmbedder(EmbedderEngine):
         try:
             pdfdatastr = pdfdata.decode('ascii')
         except UnicodeDecodeError as e:
-            logger.error(f"Cannot embed file {self.pdfname}: content stream "
-                         "has binary contents (perhaps an inline image?).  Please "
-                         "re-encode your PDF file contents differently.")
+            logger.error(textwrap.fill(
+                f"Cannot embed file {self.pdfname}: content stream "
+                f"has binary contents (perhaps an inline image?).  Please "
+                f"re-encode your PDF file contents differently and/or consider "
+                f"using the 'styxpress.embed.pdf' embedder engine instead.",
+                subsequent_indent='',
+            ))
             raise RuntimeError(f"Cannot embed file {self.pdfname}")
 
         logger.debug(f"{pdfdatastr=}")
@@ -122,3 +129,7 @@ class PdfLogoEmbedder(EmbedderEngine):
             PDFLITERAL=pdfdatastr,
         ))
 
+
+
+
+StyxpressEmbedder = PdfLogoEmbedder

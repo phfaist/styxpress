@@ -1,0 +1,1 @@
+mutool convert -F pdf -O "decompress,ascii" -o a-uncompressed-mutool-convert-pdf-pdf.pdf a.pdf

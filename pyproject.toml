@@ -12,6 +12,7 @@ poetry = 'styxpress.__main__:main'
 python = "^3.8"
 PyYAML = "^5.4.1"
 PyPDF2 = "^1.26.0"
+colorlog = ">=6.0.0a4"
 
 [tool.poetry.dev-dependencies]
 

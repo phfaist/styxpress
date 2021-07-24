@@ -1,15 +1,15 @@
 import re
 import os.path
 import string
-
-import base64
+import textwrap
+#import base64
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-from ._embedder_engine import EmbedderEngine
+from .._embedder_engine import EmbedderEngine
 
 
 _tmpl_defcmd = string.Template(r"""%% <$PDFNAME> -> \$CMDNAME
@@ -65,7 +65,7 @@ class PdfEmbedder(EmbedderEngine):
         try:
             data = data.decode('ascii')
         except UnicodeDecodeError:
-            msg = (
+            msg = textwrap.fill(
                 f"The PDF file ‘{fname}’ contains binary data.  Please process the "
                 f"file to make it ASCII-only.  You can do this e.g. with the `mutool` "
                 f"utility from the `mupdf` suite with the command `` "
@@ -75,7 +75,10 @@ class PdfEmbedder(EmbedderEngine):
                 f"try to outline all fonts with ghostscript first using `` "
                 f"gs -q -dBATCH -dSAFER -dNOPAUSE -dNoOutputFonts "
                     f"-sDEVICE=pdfwrite -sOutputFile=OUTPUT_FILE.pdf INPUT_FILE.pdf"
-                f" ``).")
+                f" ``).  See https://stackoverflow.com/a/3483710/1694896 for additional tips."
+                ,
+                subsequent_indent='\t'
+            )
             logger.error(msg)
             raise ValueError(msg)
 
@@ -93,3 +96,6 @@ class PdfEmbedder(EmbedderEngine):
             PDFDATA=pdfdata
         ))
 
+
+
+StyxpressEmbedder = PdfEmbedder

@@ -1,15 +1,47 @@
-
 import sys
 import os
 import os.path
-
-import yaml
 
 import argparse
 import logging
 import string
 
-from .embed import Environment, TargetBundle
+import yaml
+
+import colorlog
+
+from ._bundle import Environment, TargetBundle
+
+
+def setup_logging(level):
+    # You should use colorlog >= 6.0.0a4
+    handler = colorlog.StreamHandler()
+    handler.setFormatter( colorlog.LevelFormatter(
+        log_colors={
+            "DEBUG": "white",
+            "INFO": "",
+            "WARNING": "red",
+            "ERROR": "bold_red",
+            "CRITICAL": "bold_red",
+        },
+        fmt={
+            # emojis we can use: 🐞 🐜 🚨 🚦 ⚙️ 🧨 🧹 ❗️❓‼️ ⁉️ ⚠️ ℹ️ ➡️ ✔️ 〰️
+            # 🎶 💭 📣 🔔 ⏳ 🔧 🔩 ✨ 💥 🔥 🐢 👉
+            "DEBUG":    "%(log_color)s〰️    %(message)s", #'  [%(name)s]'
+            "INFO":     "%(log_color)s✨  %(message)s",
+            "WARNING":  "%(log_color)s⚠️   %(message)s", # (%(module)s:%(lineno)d)",
+            "ERROR":    "%(log_color)s🚨  %(message)s", # (%(module)s:%(lineno)d)",
+            "CRITICAL": "%(log_color)s🚨  %(message)s", # (%(module)s:%(lineno)d)",
+        },
+        stream=sys.stderr
+    ) )
+
+    root = colorlog.getLogger()
+    root.addHandler(handler)
+
+    root.setLevel(level)
+
+
 
 
 def main():
@@ -23,10 +55,18 @@ def main():
                         help="Folder (conventionally with suffix *.styxpress) containing "
                         "a 'info.yml' describing a styxpress merger")
 
+    parser.add_argument('-q', '--quiet', dest='verbosity', action='store_const',
+                        const=logging.ERROR, default=logging.INFO,
+                        help="Suppress warning messages")
+    parser.add_argument('-v', '--verbose', dest='verbosity', action='store_const',
+                        const=logging.DEBUG,
+                        help='verbose mode')
+
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.DEBUG)
+    setup_logging(level=args.verbosity)
     logger = logging.getLogger(__name__)
+
 
     styxpress_folder = args.styxpress_folder.rstrip('/') # remove any trailing slashes
     styxpress_folder_parent_dir, styxpress_folder_name = os.path.split(styxpress_folder)

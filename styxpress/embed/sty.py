@@ -1,7 +1,7 @@
 import os.path
 import string
 
-from ._embedder_engine import EmbedderEngine
+from .._embedder_engine import EmbedderEngine
 
 
 #keys: FILEBASENAME, FILEEXTENSION, MERGEDPACKAGENAME, PKGOPTIONS
@@ -102,3 +102,6 @@ class StyEmbedder(EmbedderEngine):
         self.read_and_copy_sty(f)
         f.write( self.wrapper_sty_end() )
 
+
+
+StyxpressEmbedder = StyEmbedder

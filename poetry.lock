@@ -1,4 +1,26 @@
 [[package]]
+name = "colorama"
+version = "0.4.4"
+description = "Cross-platform colored terminal text."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
+name = "colorlog"
+version = "6.3.0a1"
+description = "Add colours to the output of Python's logging module."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+
+[package.extras]
+development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
+
+[[package]]
 name = "pypdf2"
 version = "1.26.0"
 description = "PDF toolkit"
@@ -17,9 +39,17 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "cdccff4140f8d6c11cf7daa1097e040455094e2d155d8221ffb6e0ac016f9a66"
+content-hash = "32982e47f998e6ddd645510ec0b2fbe7002778604eba27485addc131e6093274"
 
 [metadata.files]
+colorama = [
+    {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
+    {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+colorlog = [
+    {file = "colorlog-6.3.0a1-py2.py3-none-any.whl", hash = "sha256:375fd730040e20618a05e9c3548330671bb53934f0eeaa8cb0abb3fd0ef8f1fa"},
+    {file = "colorlog-6.3.0a1.tar.gz", hash = "sha256:a7cfd8226fadb1730019bca1f4c4f351649ce3a39350544a6a1fad5774282021"},
+]
 pypdf2 = [
     {file = "PyPDF2-1.26.0.tar.gz", hash = "sha256:e28f902f2f0a1603ea95ebe21dff311ef09be3d0f0ef29a3e44a932729564385"},
 ]

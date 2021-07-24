@@ -1,0 +1,1 @@
+mutool convert -o a-mutool-convert-to.svg -O "text=path,no-reuse-images" a.pdf

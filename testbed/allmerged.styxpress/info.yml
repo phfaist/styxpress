@@ -1,0 +1,52 @@
+# This is a YAML file.
+
+bundle:
+  version: v0.1.1
+  package_name: allmerged
+  # output_dir: .  # relative to folder that contains the XXX.styxpress folder
+
+embed:
+  - embed_engine: 'styxpress.embed.sty'
+    config:
+      styname: mytesta
+
+  # BAD Example of `xsimverb.sty` because it uses \file_end_input: tricks inside
+  # the file.  Nothing much we can do about that (for now!)
+  #
+  # - styname: xsimverb.sty
+  #   options: clear-aux,verbose,no-files
+  #   search_tex_path: True
+
+  - embed_engine: 'styxpress.embed.sty'
+    config:
+      styname: xsim.sty
+      options: clear-aux,verbose,no-files
+      search_tex_path: True
+
+  - embed_engine: 'styxpress.embed.sty'
+    config:
+      styname: '../allmerged.styxpress/testb.sty'
+      options: 'providetestbac,ddd'
+
+
+  - embed_engine: 'styxpress.embed.pdflogo'
+    config:
+      cmdname: 'pdflogox'
+      pdfname: 'x.pdf'
+
+  ### a.pdf has a binary inline image and necessitates the 'pdf' embed engine
+  ### ('pdflogo' won't work).
+  - embed_engine: 'styxpress.embed.pdf'
+    config:
+      cmdname: 'pdflogoa'
+      pdfname: 'a-ascii.pdf'
+
+  - embed_engine: 'styxpress.embed.pdflogo'
+    config:
+      cmdname: 'helloB'
+      pdfname: 'B.pdf'
+
+  - embed_engine: 'styxpress.embed.pdf'
+    config:
+      cmdname: 'helloBetter'
+      pdfname: 'B-ascii.pdf'

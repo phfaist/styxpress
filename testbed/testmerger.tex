@@ -1,0 +1,66 @@
+\documentclass[11pt]{article}
+
+\usepackage{phfnote}
+% not merged--
+% \usepackage{testa}
+%\usepackage[clear-aux,verbose,no-files]{xsim}
+% \usepackage[providetestbac,ddd]{testb}
+%--
+\usepackage{allmerged}
+
+\xsimsetup{%
+  solution/template=runin,
+  print-solutions/headings=true,
+}
+
+
+\newcommand\mergertest{%
+  \par
+  .\testaaa.AAA.\par
+  .\testaab.C.\par
+  .\testbaa.BBB.\par
+  .\testbab.C.\par
+  .\testbac.CCC!.\par
+
+  Logos: \fbox{\pdflogox}, \fbox{\pdflogoa}, \fbox{\helloB}|\fbox{\helloBetter}
+}
+
+\begin{document}
+\title{Exercise Sheet Test}
+\date{}
+\maketitle
+
+
+
+
+\mergertest
+
+
+
+
+\begin{exercise}[subtitle={An example exercise}]
+  A first example for an exercise.  A first example for an exercise.  A first
+  example for an exercise.  A first example for an exercise.
+  \begin{solution}
+    A first example for a solution.  A first example for a solution.
+    A first example for a solution.  A first example for a solution.
+    A first example for a solution.
+  \end{solution}
+  The exercise continues here.
+  \begin{solution}
+    The solution continues here too!
+  \end{solution}
+\end{exercise}
+
+\begin{exercise}[subtitle={Another example exercise}]
+  2 2 2 2 A first example for an exercise.   A first example for an exercise.   A first example for an exercise.   A first example for an exercise.
+\end{exercise}
+\begin{solution}
+  2 2 2 2 2 A first example for a solution.  A first example for a solution.
+  A first example for a solution.  A first example for a solution.
+  A first example for a solution.
+\end{solution}
+
+
+
+\end{document}
