@@ -14,7 +14,7 @@ from .._embedder_engine import EmbedderEngine
 
 _tmpl_defcmd = string.Template(r"""%% <$PDFNAME> -> \$CMDNAME
 \RequirePackage{graphicx}%
-\def\$CMDNAME{\includegraphics{$TEMPGRAPHICSFILENAME}}
+\newcommand\$CMDNAME[1][]{\includegraphics[#1]{$TEMPGRAPHICSFILENAME}}
 \begin{filecontents*}{$TEMPGRAPHICSFILENAME}
 $PDFDATA
 \end{filecontents*}%
@@ -27,7 +27,8 @@ class PdfEmbedder(EmbedderEngine):
         self._initialize(**kwargs)
 
     def _initialize(self, *, pdfname, cmdname,
-                    temp_graphics_filename=None, hidden_temp_file=False):
+                    temp_graphics_filename=None,
+                    hidden_temp_file=False):
         self.pdfname = pdfname
         self.cmdname = cmdname
         if temp_graphics_filename is None:
