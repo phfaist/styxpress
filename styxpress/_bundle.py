@@ -76,6 +76,7 @@ class TargetBundle:
 
         self._embeds = []
 
+
     def resolve_file_name(self, filename):
         return os.path.join(self.styxpress_folder, filename)
 
@@ -137,8 +138,14 @@ class TargetBundle:
 
             f.write( self.get_header() )
 
+            seen_embedder_instances = set()
+
             for d in self._embeds:
-                d['_instance'].embed(f)
+                embedder_instance = d['_instance']
+                if embedder_instance not in seen_embedder_instances:
+                    embedder_instance.initial_defs(f)
+                    seen_embedder_instances.add(embedder_instance)
+                embedder_instance.embed(f)
 
             f.write( self.get_footer() )
 

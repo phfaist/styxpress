@@ -6,6 +6,9 @@ class EmbedderEngine:
         super().__init__()
         self.target_bundle = target_bundle
 
+    def initial_defs(self, f):
+        # can be overwritten if necessary
+        pass
 
     def embed_s(self):
         f = io.StringIO()
