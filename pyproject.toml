@@ -6,7 +6,7 @@ authors = ["Philippe Faist <philippe.faist@bluewin.ch>"]
 license = "MIT"
 
 [tool.poetry.scripts]
-poetry = 'styxpress.__main__:main'
+styxpress = 'styxpress.__main__:main'
 
 [tool.poetry.dependencies]
 python = "^3.8"
